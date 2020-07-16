@@ -1,0 +1,11 @@
+# Mac OS files
+.DS_Store
+
+# Environments
+.env*
+
+# Byte-compiled
+__pycache__
+
+# Jupyter Notebook
+.ipynb_checkpoints
