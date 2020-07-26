@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.5
 
+    # TODO: change this name
     working_directory: ~/sentiment-analysis
 
     steps:
