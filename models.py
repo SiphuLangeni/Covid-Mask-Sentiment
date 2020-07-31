@@ -13,7 +13,7 @@ class Tweet(Base):
     hashtags = Column(String(200))
 
     def __repr__(self):
-        return(f'Tweet {tweet_id}\n{self.tweet}\n\n'
+        return(f'Tweet {self.tweet_id}\n{self.tweet}\n\n'
         f'Date: {self.date_created}\n'
         f'Hashtags: {self.hashtags}\n'
         f'Record ID: {self.record_id}\n')
