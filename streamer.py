@@ -1,23 +1,63 @@
+from os import environ
+import json
+from models import Base, Tweet
+
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 from tweepy import Stream
 
-from os import environ
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+db_uri = environ.get('DATABASE_URI')
+engine = create_engine(db_uri)
+Session = sessionmaker(bind=engine)
 
 
-# Create a class inheriting from StreamListener
 class MaskListener(StreamListener):
-    
-    def on_data(self, raw_data):
-        print(raw_data)
-        # filter the raw_data
-        # send to the database
-        # "turn off" when the n number of tweets retrieved
+
+    def on_data(self, data):
+
+        tweet_data = json.loads(data)
+
+        # Exclude retweets
+        if 'retweeted_status' not in tweet_data:
+            
+            # Extract tweet text and hashtags from tweet_data
+            if 'extended_tweet' in tweet_data:
+                try:
+                    text = tweet_data['extended_tweet']['full_text']
+                    beginning = tweet_data['extended_tweet']['display_text_range'][0]
+                    end = tweet_data['extended_tweet']['display_text_range'][1]
+                    tweet = text[beginning:end]
+                    hashtags = []
+                    for hashtag in tweet_data['extended_tweet']['entities']['hashtags']:
+                        hashtags.append(hashtag['text'])
+                
+                except AttributeError:
+                    tweet = tweet_data['text']
+                    hashtags = []
+                    for hashtag in tweet['entities']['hashtags']:
+                        hashtags.append(hashtag['text'])
+
+                # Filter records to update to database 
+                if 'mask' in tweet and any(x in tweet for x in ['covid', 'pandemic', 'coronavirus']):
+                    session = Session()
+                    
+                    new_tweet = Tweet(
+                        date_created=tweet_data['created_at'],
+                        tweet_id=tweet_data['id_str'],
+                        tweet=tweet,
+                        hashtags=hashtags)
+
+                    session.add(new_tweet)
+                    session.commit()
+                    session.close()
+            
         return True
 
     def on_error(self, status_code):
         if status_code == 420:
-            #returning False in on_error disconnects the stream
             return False
 
 
@@ -38,12 +78,12 @@ def mask_streamer(keyword_list):
     Start the twitter streamer
     '''
     
-    stream = Stream(auth=twitter_auth(), listener=MaskListener())
+    stream = Stream(auth=twitter_auth(), listener=MaskListener(), tweet_mode='extended')
     stream.filter(track=keyword_list, languages=['en'])
 
 
 if __name__ == "__main__":
 
-    keyword_list = ['covid19', 'covid-19', 'pandemic', 'coronavirus', 'mask']
+    keyword_list = ['covid', 'pandemic', 'coronavirus', 'mask']
     mask_streamer(keyword_list)
 
