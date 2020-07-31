@@ -6,14 +6,14 @@ Base = declarative_base()
 class Tweet(Base):
 
     __tablename__ = 'tweets'
-    record_id = Column(Integer, autoincrement=True, primary_key=True)
-    date_created = Column(DateTime)
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    date_created = Column(String(50))
     tweet_id = Column(String(20))
     tweet = Column(String(1000))
     hashtags = Column(String(200))
 
     def __repr__(self):
-        return(f'Tweet {tweet_id}\n{self.tweet}\n\n'
+        return(f'Tweet {self.tweet_id}\n{self.tweet}\n\n'
         f'Date: {self.date_created}\n'
         f'Hashtags: {self.hashtags}\n'
-        f'Record ID: {self.record_id}\n')
+        f'Record ID: {self.id}\n')
