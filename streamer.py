@@ -42,23 +42,22 @@ class MaskListener(StreamListener):
 
                 # Filter records to update to database 
                 if 'mask' in tweet and any(x in tweet for x in ['covid', 'pandemic', 'coronavirus']):
-                    session = Session()
                     
-                    new_tweet = Tweet(
-                        date_created=tweet_data['created_at'],
-                        tweet_id=tweet_data['id_str'],
-                        tweet=tweet,
-                        hashtags=hashtags)
+                    with session_scope() as session:
+                    
+                        new_tweet = Tweet(
+                            date_created=tweet_data['created_at'],
+                            tweet_id=tweet_data['id_str'],
+                            tweet=tweet,
+                            hashtags=hashtags)
 
-                    session.add(new_tweet)
-                    session.commit()
-                    session.close()
+                        session.add(new_tweet)
+                        session.commit()
             
         return True
 
     def on_error(self, status_code):
-        if status_code == 420:
-            return False
+        return False
 
 
 def twitter_auth():
