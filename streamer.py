@@ -1,20 +1,15 @@
 from os import environ
 import json
 from models import Base, Tweet
+from sentiment_anlysis.db.utils import session_scope
 
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 from tweepy import Stream
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-db_uri = environ.get('DATABASE_URI')
-engine = create_engine(db_uri)
-Session = sessionmaker(bind=engine)
-
-
 class MaskListener(StreamListener):
+
+    tweet_counter = 0
 
     def on_data(self, data):
 
@@ -41,8 +36,8 @@ class MaskListener(StreamListener):
                         hashtags.append(hashtag['text'])
 
                 # Filter records to update to database 
-                if 'mask' in tweet and any(x in tweet for x in ['covid', 'pandemic', 'coronavirus']):
-                    
+                if 'mask' in tweet.casefold() and any(x in tweet.casefold() for x in ['covid', 'pandemic', 'corona', 'virus']):
+                    self.tweet_counter += 1
                     with session_scope() as session:
                     
                         new_tweet = Tweet(
@@ -53,11 +48,16 @@ class MaskListener(StreamListener):
 
                         session.add(new_tweet)
                         session.commit()
-            
-        return True
+
+                if self.tweet_counter < 5_000:
+                    return True
+                
+                else:
+                    return False
 
     def on_error(self, status_code):
-        return False
+        if status_code == 420:
+            return False
 
 
 def twitter_auth():
@@ -83,6 +83,6 @@ def mask_streamer(keyword_list):
 
 if __name__ == "__main__":
 
-    keyword_list = ['covid', 'pandemic', 'coronavirus', 'mask']
+    keyword_list = ['covid', 'pandemic', 'corona', 'virus', 'mask']
     mask_streamer(keyword_list)
 
