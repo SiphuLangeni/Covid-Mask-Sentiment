@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from models import MaskSentimentClassifier
+from sentiment_analysis.models import MaskSentimentAnalysis
 
 app = FastAPI()
 
@@ -12,4 +12,4 @@ async def sentiment_prediction(tweet):
 
 @app.get('/healthcheck', status_code=200)
 async def healthcheck():
-    return 'Covid mask sentiment analysis app is healthy'
+    return 'Covid mask sentiment app is healthy!'
