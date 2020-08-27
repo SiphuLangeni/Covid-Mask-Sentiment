@@ -1,14 +1,19 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, DateTime, ARRAY
 
-from sentiment_analysis import settings
 
 Base = declarative_base()
 
 
-class Tweets(Base):  # type: ignore
-    # TODO: fill this out
+class Tweets(Base):
     __tablename__ = 'tweets'
-    __table_args__ = {'schema': settings.app_env}
-    uuid = Column(String, primary_key=True, index=True)
-    tweet_text = Column(String, nullable=False)
+    tweet_id = Column(String(20), nullable=False, primary_key=True)
+    tweet_created_at = Column(DateTime(), nullable=False)
+    tweet = Column(String(2000), nullable=False)
+    hashtags = Column(ARRAY(String(500), zero_indexes=True), nullable=True)
+    label = Column(String(8), nullable=True)
+    annotated_at = Column(DateTime(), nullable=True)
+    updated_at = Column(DateTime(), nullable=False)
+
+    def __repr__(self):
+        return(f'Tweet {self.tweet_id} created @ {self.tweet_created_at}:\n\n{self.tweet}')
