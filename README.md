@@ -7,4 +7,4 @@
 * Give direnv permission to read `.envrc` by running `direnv allow`
 * Install all dependencies using `pip install -r requirements.txt`
 
-Start the Docker container by running `sh ./start_app`.
+Start the Docker container by running `sh ./start_app.sh`.
