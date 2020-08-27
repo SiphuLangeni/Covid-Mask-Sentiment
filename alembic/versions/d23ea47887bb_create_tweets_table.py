@@ -23,7 +23,8 @@ def upgrade():
                     sa.Column('hashtags', sa.ARRAY(sa.String()), nullable=False),
                     sa.Column('label', sa.String(), nullable=True),
                     sa.Column('tweet_created_at', sa.DateTime(), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(), nullable=False)
+                    sa.Column('updated_at', sa.DateTime(), nullable=False),
+                    sa.Column('annotated_at', sa.DateTime(), nullable=False)
                     )
 
 
