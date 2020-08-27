@@ -1,2 +1,2 @@
-docker build . -t sentiment_analysis
+docker build . -t sentiment-analysis
 docker-compose up
