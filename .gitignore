@@ -1,5 +1,19 @@
+# MacOS generated
 .DS_Store
+._*
+
+# Environments
 .env
+.envrc
+
+# Byte-compliled
 __pycache__
 .mypy_cache/*
-.envrc
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Pipfile
+Pipfile
+Pipfile.lock
+
