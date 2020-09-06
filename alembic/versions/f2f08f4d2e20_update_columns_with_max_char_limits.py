@@ -21,7 +21,6 @@ def upgrade():
     op.alter_column('tweets', 'tweet', type_=sa.String(2000))
     op.alter_column('tweets', 'hashtags', type_=sa.ARRAY(sa.String(500)))
     op.alter_column('tweets', 'label', type_=sa.String(8))
-    op.alter_column('tweets', 'tweet', type_=sa.String(2000))
 
 
 def downgrade():
@@ -29,4 +28,3 @@ def downgrade():
     op.alter_column('tweets', 'tweet', type_=sa.String())
     op.alter_column('tweets', 'hashtags', type_=sa.ARRAY(sa.String()))
     op.alter_column('tweets', 'label', type_=sa.String())
-    op.alter_column('tweets', 'tweet', type_=sa.String())
