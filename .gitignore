@@ -1,6 +1,6 @@
 # MacOS generated
 .DS_Store
-._*
+._[a-zA-Z]
 
 # Environments
 .env
