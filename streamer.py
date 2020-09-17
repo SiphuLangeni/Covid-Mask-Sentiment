@@ -15,6 +15,8 @@ class MaskListener(StreamListener):
     def on_data(self, data):
 
         tweet_data = json.loads(data)
+        date = tweet_data['created_at']
+        date = datetime.strptime(date, '%a %b %d %H:%M:%S %z %Y')
 
         # Exclude retweets
         if 'retweeted_status' not in tweet_data:
@@ -45,7 +47,7 @@ class MaskListener(StreamListener):
                             tweet_id=tweet_data['id_str'],
                             tweet=tweet,
                             hashtags=hashtags,
-                            tweet_created_at=tweet_data['created_at'],
+                            tweet_created_at=date,
                             updated_at=datetime.now().replace(microsecond=0)
                         )
 
