@@ -1,5 +1,6 @@
 from os import environ
 import json
+from datetime import datetime
 from models import Base, Tweet
 from sentiment_anlysis.db.utils import session_scope
 
@@ -41,10 +42,12 @@ class MaskListener(StreamListener):
                     with session_scope() as session:
                     
                         new_tweet = Tweet(
-                            date_created=tweet_data['created_at'],
                             tweet_id=tweet_data['id_str'],
                             tweet=tweet,
-                            hashtags=hashtags)
+                            hashtags=hashtags,
+                            tweet_created_at=tweet_data['created_at'],
+                            updated_at=datetime.now().replace(microsecond=0)
+                        )
 
                         session.add(new_tweet)
                         session.commit()
