@@ -1,8 +1,9 @@
 from os import environ
 import json
+import re
 from datetime import datetime
-from models import Base, Tweet
-from sentiment_anlysis.db.utils import session_scope
+from sentiment_analysis.db.models import Base, Tweets
+from sentiment_analysis.db.utils import session_scope
 
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
@@ -15,8 +16,10 @@ class MaskListener(StreamListener):
     def on_data(self, data):
 
         tweet_data = json.loads(data)
-        date = tweet_data['created_at']
-        date = datetime.strptime(date, '%a %b %d %H:%M:%S %z %Y')
+        if 'created_at' in tweet_data:
+            date = tweet_data['created_at']
+            date = re.sub(r'\s\+\d+\s', ' ', date[4:])
+            date = datetime.strptime(date, '%b %d %H:%M:%S %Y')
 
         # Exclude retweets
         if 'retweeted_status' not in tweet_data:
@@ -43,7 +46,7 @@ class MaskListener(StreamListener):
                     self.tweet_counter += 1
                     with session_scope() as session:
                     
-                        new_tweet = Tweet(
+                        new_tweet = Tweets(
                             tweet_id=tweet_data['id_str'],
                             tweet=tweet,
                             hashtags=hashtags,
