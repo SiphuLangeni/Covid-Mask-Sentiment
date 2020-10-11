@@ -14,6 +14,11 @@ class MaskClassifier:
         with open('token.json') as file:
             token_data = json.load(file)
             self.token = tokenizer_from_json(token_data)
+        self.sentiment = {
+            0: 'positive',
+            1: 'negative',
+            2: 'neutral'
+        }
 
     def preprocess(self, tweet):
         tweet = re.sub(r'http\S+', ' ', tweet)
@@ -33,17 +38,8 @@ class MaskClassifier:
         padded_tweet = pad_sequences(tweet_sequence, maxlen=75, padding='post', truncating='post')
         tweet_input = tf.expand_dims(padded_tweet[0], 0)
         output = self.model.predict(tweet_input)
-        encoding = np.argmax(output)
-        prob = np.max(output)
-        
-        if encoding == 0:
-            sentiment = 'Positive'
-        elif encoding == 1:
-            sentiment = 'Negative'
-        elif encoding == 2:
-            sentiment = 'Neutral'
         
         return {
-            'sentiment': sentiment,
-            'probability': prob
+            'sentiment': self.sentiment[np.argmax(output)],
+            'probability': np.max(output)
         }
