@@ -9,16 +9,27 @@ import re
 
 class MaskClassifier:
 
-    def __init__(self, model, token):
-        self.model = load_model('covid_mask')
-        with open('token.json') as file:
-            token_data = json.load(file)
-            self.token = tokenizer_from_json(token_data)
+    def __init__(self):
+        self.model = self.load_model()
+        self.token = self.load_tokens()
         self.sentiment = {
             0: 'positive',
             1: 'negative',
             2: 'neutral'
         }
+
+
+    def load_model(self):
+        model = load_model('covid_mask')
+        return model
+
+
+    def load_tokens(self):
+        with open('token.json') as file:
+            token_data = json.load(file)
+            tokens = tokenizer_from_json(token_data)
+        return tokens
+
 
     def preprocess(self, tweet):
         tweet = re.sub(r'http\S+', ' ', tweet)
@@ -31,6 +42,7 @@ class MaskClassifier:
         tweet = tweet.strip()
     
         return tweet
+
 
     def get_predictions(self, tweet: str):
         tweet = self.preprocess(tweet)
